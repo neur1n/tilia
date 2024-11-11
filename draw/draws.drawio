@@ -1,0 +1,238 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.7.17 Chrome/128.0.6613.36 Electron/32.0.1 Safari/537.36" version="24.7.17">
+  <diagram name="Page-1" id="emXwoQElGsBJx4wPXqjg">
+    <mxGraphModel dx="2693" dy="1219" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="acVLIip2d5TXFT_uysF2-4" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=open;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;endFill=0;" edge="1" parent="1" source="Z_r1T4huVq3F6B1xQD4C-1" target="acVLIip2d5TXFT_uysF2-3">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-580" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Z_r1T4huVq3F6B1xQD4C-1" value="PW &amp;lt;= 0.30: p1" style="whiteSpace=wrap;html=1;fontFamily=Garamond;fontSize=20;rounded=1;glass=0;shadow=0;" parent="1" vertex="1">
+          <mxGeometry x="-840" y="200" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-5" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=open;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;" edge="1" parent="1" source="acVLIip2d5TXFT_uysF2-2" target="acVLIip2d5TXFT_uysF2-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-2" value="3.40 &amp;lt; SW: p1" style="whiteSpace=wrap;html=1;fontFamily=Garamond;fontSize=20;rounded=1;glass=0;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="-840" y="120" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-3" value="sesota" style="whiteSpace=wrap;html=1;fontFamily=Garamond;fontSize=20;rounded=1;glass=0;shadow=0;sketch=1;curveFitting=1;jiggle=2;" vertex="1" parent="1">
+          <mxGeometry x="-560" y="120" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-6" value="5.10 &amp;lt; SL &amp;lt;= 5.75: p1" style="whiteSpace=wrap;html=1;fontFamily=Garamond;fontSize=20;rounded=1;glass=0;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="-840" y="80" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-9" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=open;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;" edge="1" parent="1" source="acVLIip2d5TXFT_uysF2-6" target="acVLIip2d5TXFT_uysF2-3">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-249" y="220" as="sourcePoint" />
+            <mxPoint x="-370" y="394" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-13" value="1.50 &amp;lt; PL &amp;lt;= 4.25: p1" style="whiteSpace=wrap;html=1;fontFamily=Garamond;fontSize=20;rounded=1;glass=0;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="-840" y="160" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-18" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=open;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;" edge="1" parent="1" source="acVLIip2d5TXFT_uysF2-13" target="acVLIip2d5TXFT_uysF2-3">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-560" y="339" as="sourcePoint" />
+            <mxPoint x="-648" y="310" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-19" value="&lt;font face=&quot;Garamond&quot; style=&quot;font-size: 20px;&quot;&gt;iris_0_Ridge_fp_2024_11_04_162852.csv&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" vertex="1" parent="1">
+          <mxGeometry x="-840" y="40" width="400" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-20" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=open;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;" edge="1" source="acVLIip2d5TXFT_uysF2-22" target="acVLIip2d5TXFT_uysF2-25" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-580" y="520" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-22" value="0.30 &amp;lt; PW &amp;lt;= 1.30: n1" style="whiteSpace=wrap;html=1;fontFamily=Garamond;fontSize=20;rounded=1;glass=0;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="-840" y="440" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-23" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=open;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;" edge="1" source="acVLIip2d5TXFT_uysF2-24" target="acVLIip2d5TXFT_uysF2-25" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-24" value="3.00 &amp;lt; SW &amp;lt;= 3.40: p1" style="whiteSpace=wrap;html=1;fontFamily=Garamond;fontSize=20;rounded=1;glass=0;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="-840" y="360" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-25" value="sesota" style="whiteSpace=wrap;html=1;fontFamily=Garamond;fontSize=20;rounded=1;glass=0;shadow=0;sketch=1;curveFitting=1;jiggle=2;" vertex="1" parent="1">
+          <mxGeometry x="-560" y="360" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-26" value="5.10 &amp;lt; SL &amp;lt;= 5.75: n2" style="whiteSpace=wrap;html=1;fontFamily=Garamond;fontSize=20;rounded=1;glass=0;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="-840" y="320" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-27" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=open;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;" edge="1" source="acVLIip2d5TXFT_uysF2-26" target="acVLIip2d5TXFT_uysF2-25" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-249" y="460" as="sourcePoint" />
+            <mxPoint x="-370" y="634" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-29" value="PL &amp;lt;= 1.50: p1" style="whiteSpace=wrap;html=1;fontFamily=Garamond;fontSize=20;rounded=1;glass=0;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="-840" y="400" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-34" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=open;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;" edge="1" source="acVLIip2d5TXFT_uysF2-29" target="acVLIip2d5TXFT_uysF2-25" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-560" y="579" as="sourcePoint" />
+            <mxPoint x="-648" y="550" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-35" value="&lt;font face=&quot;Garamond&quot; style=&quot;font-size: 20px;&quot;&gt;iris_0_Ridge_fp_2024_11_04_162904.csv&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" vertex="1" parent="1">
+          <mxGeometry x="-840" y="280" width="400" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-37" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=open;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;" edge="1" source="acVLIip2d5TXFT_uysF2-38" target="acVLIip2d5TXFT_uysF2-41" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-580" y="760" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-38" value="PW &amp;lt;= 0.30: p1" style="whiteSpace=wrap;html=1;fontFamily=Garamond;fontSize=20;rounded=1;glass=0;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="-840" y="680" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-39" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=open;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;" edge="1" source="acVLIip2d5TXFT_uysF2-40" target="acVLIip2d5TXFT_uysF2-41" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-40" value="3.00 &amp;lt; SW &amp;lt;= 3.40: p1" style="whiteSpace=wrap;html=1;fontFamily=Garamond;fontSize=20;rounded=1;glass=0;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="-840" y="600" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-41" value="sesota" style="whiteSpace=wrap;html=1;fontFamily=Garamond;fontSize=20;rounded=1;glass=0;shadow=0;sketch=1;curveFitting=1;jiggle=2;" vertex="1" parent="1">
+          <mxGeometry x="-560" y="600" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-42" value="SL &amp;lt;= 5.10: p1" style="whiteSpace=wrap;html=1;fontFamily=Garamond;fontSize=20;rounded=1;glass=0;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="-840" y="560" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-43" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=open;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;" edge="1" source="acVLIip2d5TXFT_uysF2-42" target="acVLIip2d5TXFT_uysF2-41" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-249" y="700" as="sourcePoint" />
+            <mxPoint x="-370" y="874" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-44" value="PL &amp;lt;= 1.50: p1" style="whiteSpace=wrap;html=1;fontFamily=Garamond;fontSize=20;rounded=1;glass=0;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="-840" y="640" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-45" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=open;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;" edge="1" source="acVLIip2d5TXFT_uysF2-44" target="acVLIip2d5TXFT_uysF2-41" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-560" y="819" as="sourcePoint" />
+            <mxPoint x="-648" y="790" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-46" value="&lt;font face=&quot;Garamond&quot; style=&quot;font-size: 20px;&quot;&gt;iris_0_Ridge_fp_2024_11_04_162921.csv&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" vertex="1" parent="1">
+          <mxGeometry x="-840" y="520" width="400" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-47" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=open;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;" edge="1" source="acVLIip2d5TXFT_uysF2-48" target="acVLIip2d5TXFT_uysF2-51" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-580" y="1000" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-48" value="PW &amp;lt;= 0.30: p1" style="whiteSpace=wrap;html=1;fontFamily=Garamond;fontSize=20;rounded=1;glass=0;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="-840" y="920" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-49" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=open;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;" edge="1" source="acVLIip2d5TXFT_uysF2-50" target="acVLIip2d5TXFT_uysF2-51" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-50" value="3.40 &amp;lt; SW: p1" style="whiteSpace=wrap;html=1;fontFamily=Garamond;fontSize=20;rounded=1;glass=0;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="-840" y="840" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-51" value="sesota" style="whiteSpace=wrap;html=1;fontFamily=Garamond;fontSize=20;rounded=1;glass=0;shadow=0;sketch=1;curveFitting=1;jiggle=2;" vertex="1" parent="1">
+          <mxGeometry x="-560" y="840" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-52" value="5.10 &amp;lt; SL &amp;lt;= 5.75: p1" style="whiteSpace=wrap;html=1;fontFamily=Garamond;fontSize=20;rounded=1;glass=0;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="-840" y="800" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-53" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=open;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;" edge="1" source="acVLIip2d5TXFT_uysF2-52" target="acVLIip2d5TXFT_uysF2-51" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-249" y="940" as="sourcePoint" />
+            <mxPoint x="-370" y="1114" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-54" value="PL &amp;lt;= 1.50: p1" style="whiteSpace=wrap;html=1;fontFamily=Garamond;fontSize=20;rounded=1;glass=0;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="-840" y="880" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-55" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=open;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;" edge="1" source="acVLIip2d5TXFT_uysF2-54" target="acVLIip2d5TXFT_uysF2-51" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-560" y="1059" as="sourcePoint" />
+            <mxPoint x="-648" y="1030" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-56" value="&lt;font face=&quot;Garamond&quot; style=&quot;font-size: 20px;&quot;&gt;iris_0_Ridge_fp_2024_11_04_162924.csv&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" vertex="1" parent="1">
+          <mxGeometry x="-840" y="760" width="400" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-57" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=open;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;" edge="1" source="acVLIip2d5TXFT_uysF2-58" target="acVLIip2d5TXFT_uysF2-61" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-580" y="1240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-58" value="PW &amp;lt;= 0.30: p1" style="whiteSpace=wrap;html=1;fontFamily=Garamond;fontSize=20;rounded=1;glass=0;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="-840" y="1160" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-59" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=open;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;" edge="1" source="acVLIip2d5TXFT_uysF2-60" target="acVLIip2d5TXFT_uysF2-61" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-60" value="3.00 &amp;lt; SW &amp;lt;= 3.40: p1" style="whiteSpace=wrap;html=1;fontFamily=Garamond;fontSize=20;rounded=1;glass=0;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="-840" y="1080" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-61" value="sesota" style="whiteSpace=wrap;html=1;fontFamily=Garamond;fontSize=20;rounded=1;glass=0;shadow=0;sketch=1;curveFitting=1;jiggle=2;" vertex="1" parent="1">
+          <mxGeometry x="-560" y="1080" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-62" value="SL &amp;lt;= 5.10: p1" style="whiteSpace=wrap;html=1;fontFamily=Garamond;fontSize=20;rounded=1;glass=0;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="-840" y="1040" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-63" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=open;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;" edge="1" source="acVLIip2d5TXFT_uysF2-62" target="acVLIip2d5TXFT_uysF2-61" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-249" y="1180" as="sourcePoint" />
+            <mxPoint x="-370" y="1354" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-64" value="PL &amp;lt;= 1.50: p1" style="whiteSpace=wrap;html=1;fontFamily=Garamond;fontSize=20;rounded=1;glass=0;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="-840" y="1120" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-65" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=open;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;" edge="1" source="acVLIip2d5TXFT_uysF2-64" target="acVLIip2d5TXFT_uysF2-61" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-560" y="1299" as="sourcePoint" />
+            <mxPoint x="-648" y="1270" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-66" value="&lt;font face=&quot;Garamond&quot; style=&quot;font-size: 20px;&quot;&gt;iris_0_Ridge_fp_2024_11_04_162928.csv&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" vertex="1" parent="1">
+          <mxGeometry x="-840" y="1000" width="400" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-67" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=open;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;endFill=0;" edge="1" source="acVLIip2d5TXFT_uysF2-68" target="acVLIip2d5TXFT_uysF2-71" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-100" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-68" value="0.30 &amp;lt; PW &amp;lt;= 1.30: p1" style="whiteSpace=wrap;html=1;fontFamily=Garamond;fontSize=20;rounded=1;glass=0;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="-360" y="200" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-69" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=open;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;" edge="1" source="acVLIip2d5TXFT_uysF2-70" target="acVLIip2d5TXFT_uysF2-71" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-70" value="SW &amp;lt; 2.80: p1" style="whiteSpace=wrap;html=1;fontFamily=Garamond;fontSize=20;rounded=1;glass=0;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="-360" y="120" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-71" value="versicolor" style="whiteSpace=wrap;html=1;fontFamily=Garamond;fontSize=20;rounded=1;glass=0;shadow=0;sketch=1;curveFitting=1;jiggle=2;" vertex="1" parent="1">
+          <mxGeometry x="-80" y="120" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-72" value="5.75 &amp;lt; SL &amp;lt;= 6.40: p1" style="whiteSpace=wrap;html=1;fontFamily=Garamond;fontSize=20;rounded=1;glass=0;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="-360" y="80" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-73" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=open;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;" edge="1" source="acVLIip2d5TXFT_uysF2-72" target="acVLIip2d5TXFT_uysF2-71" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="231" y="220" as="sourcePoint" />
+            <mxPoint x="110" y="394" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-74" value="4.25 &amp;lt; PL &amp;lt;= 5.10&lt;span style=&quot;background-color: initial;&quot;&gt;: p1&lt;/span&gt;" style="whiteSpace=wrap;html=1;fontFamily=Garamond;fontSize=20;rounded=1;glass=0;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="-360" y="160" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-75" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=open;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;" edge="1" source="acVLIip2d5TXFT_uysF2-74" target="acVLIip2d5TXFT_uysF2-71" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-80" y="339" as="sourcePoint" />
+            <mxPoint x="-168" y="310" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="acVLIip2d5TXFT_uysF2-76" value="&lt;font face=&quot;Garamond&quot; style=&quot;font-size: 20px;&quot;&gt;iris_1_Ridge_fp_2024_11_04_162842.csv&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" vertex="1" parent="1">
+          <mxGeometry x="-360" y="40" width="400" height="40" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
