@@ -30,7 +30,7 @@ dataset = [
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("-d", "--data", default="mode", required=False, help="Data used for plotting")
+    ap.add_argument("-d", "--data", default="sum", required=False, help="Data used for plotting")
     ap.add_argument("-r", "--regressor", default=None, required=False, help="Regressor, linear or tree")
     ap.add_argument("-t", "--timestamp", default=None, required=False, help="Timestamp")
     args = ap.parse_args()

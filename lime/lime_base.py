@@ -205,20 +205,22 @@ class LimeBase(object):
         if not hasattr(easy_model, "intercept_"):
             setattr(easy_model, "intercept_", 0.0)
 
-        coef = None
+        importance = None
         if hasattr(easy_model, "coef_"):
-            coef = easy_model.coef_
+            importance = easy_model.coef_
         elif hasattr(easy_model, "feature_importances_"):
-            coef = easy_model.feature_importances_
+            importance = easy_model.feature_importances_
             # NOTE: It does not lead to good visualization or interpretation.
+            # NOTE: Instead, just use all possitive importances and normalize
+            #       them to [-1, 1].
             # if label != neighborhood_labels[0].argmax():
-            #     coef = -coef
+            #     importance = -importance
 
         if self.verbose:
             print('Intercept', easy_model.intercept_)
             print('Prediction_local', local_pred,)
             print('Right:', neighborhood_labels[0, label])
         return (easy_model.intercept_,
-                sorted(zip(used_features, coef),
+                sorted(zip(used_features, importance),
                        key=lambda x: np.abs(x[1]), reverse=True),
                 prediction_score, local_pred)

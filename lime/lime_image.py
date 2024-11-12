@@ -31,7 +31,7 @@ class ImageExplanation(object):
         self.local_pred = None
 
     def get_image_and_mask(self, label, positive_only=True, negative_only=False, hide_rest=False,
-                           num_features=5, min_weight=0.):
+                           num_features=5, min_weight=0., explanation=None):
         """Init function.
 
         Args:
@@ -58,7 +58,7 @@ class ImageExplanation(object):
             raise ValueError("Positive_only and negative_only cannot be true at the same time.")
         segments = self.segments
         image = self.image
-        exp = self.local_exp[label]
+        exp = self.local_exp[label] if explanation is None else explanation 
         mask = np.zeros(segments.shape, segments.dtype)
         if hide_rest:
             temp = np.zeros(self.image.shape)
@@ -133,7 +133,8 @@ class LimeImageExplainer(object):
                          segmentation_fn=None,
                          distance_metric='cosine',
                          model_regressor=None,
-                         random_seed=None):
+                         random_seed=None,
+                         num_repeat=1):
         """Generates explanations for a prediction.
 
         First, we generate neighborhood data by randomly perturbing features
@@ -178,6 +179,11 @@ class LimeImageExplainer(object):
             segmentation_fn = SegmentationAlgorithm('quickshift', kernel_size=4,
                                                     max_dist=200, ratio=0.2,
                                                     random_seed=random_seed)
+        elif segmentation_fn == "slic":
+            segmentation_fn = SegmentationAlgorithm("slic", kernel_size=4,
+                                                    max_dist=200, ratio=0.2,
+                                                    random_seed=random_seed)
+        segments = None
         try:
             segments = segmentation_fn(image)
         except ValueError as e:
@@ -195,29 +201,33 @@ class LimeImageExplainer(object):
 
         top = labels
 
-        data, labels = self.data_labels(image, fudged_image, segments,
-                                        classifier_fn, num_samples,
-                                        batch_size=batch_size)
+        explanation = {}
+        for i in range(1 if num_repeat < 1 else num_repeat):
+            data, labels = self.data_labels(image, fudged_image, segments,
+                                            classifier_fn, num_samples,
+                                            batch_size=batch_size)
 
-        distances = sklearn.metrics.pairwise_distances(
-            data,
-            data[0].reshape(1, -1),
-            metric=distance_metric
-        ).ravel()
+            distances = sklearn.metrics.pairwise_distances(
+                data,
+                data[0].reshape(1, -1),
+                metric=distance_metric
+            ).ravel()
 
-        ret_exp = ImageExplanation(image, segments)
-        if top_labels:
-            top = np.argsort(labels[0])[-top_labels:]
-            ret_exp.top_labels = list(top)
-            ret_exp.top_labels.reverse()
-        for label in top:
-            (ret_exp.intercept[label],
-             ret_exp.local_exp[label],
-             ret_exp.score, ret_exp.local_pred) = self.base.explain_instance_with_data(
-                data, labels, distances, label, num_features,
-                model_regressor=model_regressor,
-                feature_selection=self.feature_selection)
-        return ret_exp
+            ret_exp = ImageExplanation(image, segments)
+            if top_labels:
+                top = np.argsort(labels[0])[-top_labels:]
+                ret_exp.top_labels = list(top)
+                ret_exp.top_labels.reverse()
+            for label in top:
+                (ret_exp.intercept[label],
+                 ret_exp.local_exp[label],
+                 ret_exp.score, ret_exp.local_pred) = self.base.explain_instance_with_data(
+                    data, labels, distances, label, num_features,
+                    model_regressor=model_regressor,
+                    feature_selection=self.feature_selection)
+            ret_exp.segments = segments
+            explanation[f"repeat{i}"] = ret_exp
+        return explanation
 
     def data_labels(self,
                     image,
