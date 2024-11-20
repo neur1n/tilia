@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
-import collections
+import copy
 import numpy as np
 import pandas as pd
 import re
-import scipy.stats
 
 
 def bin_importance(value, positive_quantile, negative_quantile):
@@ -23,48 +23,86 @@ def bin_importance(value, positive_quantile, negative_quantile):
 
 
 def feature_key(feature: str):
-    match = re.match(r"(?:(\d*\.?\d*)\s*<\s*)?([a-zA-Z\s\(\)]+)\s*(<=?|>=?|==)\s*(\d*\.?\d*)", feature)
+    match = re.match(r"(?:(-?\d+(?:\.\d+)?)\s*)?([<>]=?|=)?\s*([\w\s()]+)\s*([<>]=?|=)?\s*(?:(-?\d+(?:\.\d+)?))?", feature)
     assert match, f"Invalid feature: {feature}"
-    start, name, operator, end = match.groups()
 
-    key = [name, 0.0, 0.0]
+    lower = None
+    upper = None
+    name = match.group(3).strip()
 
-    if start:
-        key[1] = float(start)
-    elif operator in (">", ">="):
-        key[1] = float(end)
-    else:
-        key[1] = float("-inf")
+    if match.group(2) in ["<", "<="]:
+        upper = match.group(5) if match.group(5) else match.group(1)
+    elif match.group(2) in [">", ">="]:
+        lower = match.group(1)
 
-    if operator in ("<", "<=", "=="):
-        key[2] = float(end)
-    else:
-        key[2] = float("inf")
+    if match.group(4) in ["<", "<="]:
+        upper = match.group(5)
+    elif match.group(4) in [">", ">="]:
+        lower = match.group(5)
 
-    return key
+    lower = float(lower) if lower is not None else float("-inf")
+    upper = float(upper) if upper is not None else float("inf")
+
+    return [name, lower, upper]
 
 
-def get_column_entropy(column: pd.Series):
-    quantile = []
-
-    for i, item in enumerate(column):
-        parsed: dict = parse_condition(item)
-        for _, v in parsed.items():
-            quantile.append(v["quantile"])
-
-    counts = collections.Counter(quantile)
-    return scipy.stats.entropy(list(counts.values()), base=2)
-
-def normalize(matrix: np.ndarray, lower: float = 0.0, upper: float = 1.0, scale: float = 1.0) -> np.ndarray:
-    min_val = np.min(matrix)
-    max_val = np.max(matrix)
+def normalize(data: np.ndarray, lower: float = 0.0, upper: float = 1.0, scale: float = 1.0) -> np.ndarray:
+    min_val = np.min(data)
+    max_val = np.max(data)
 
     if min_val == max_val:
-        return np.full(matrix.shape, lower)
+        return np.full(data.shape, lower)
 
-    normalized_matrix = (matrix - min_val) / (max_val - min_val)
-    scaled_matrix = normalized_matrix * (upper - lower) + lower
-    return scaled_matrix
+    normalized = (data - min_val) / (max_val - min_val)
+    scaled = normalized * (upper - lower) + lower
+
+    return scaled
+
+
+def normalize_with_mean_reference(data: np.ndarray) -> np.ndarray:
+    output = np.zeros_like(data)
+
+    for i, row in enumerate(data):
+        pos = [x for x in row if x > 0]
+        neg = [x for x in row if x < 0]
+
+        normalized = []
+
+        if pos and not neg:
+            mean_pos = sum(pos) / len(pos)
+            normalized = [(x - mean_pos) / (max(pos) - mean_pos) for x in row]
+        elif neg and not pos:
+            mean_neg = sum(neg) / len(neg)
+            normalized = [(x - mean_neg) / (mean_neg - min(neg)) for x in row]
+        else:
+            max_pos = max(pos, default=0)
+            min_neg = min(neg, default=0)
+            normalized = [(x / max_pos if x > 0 else x / abs(min_neg) if x < 0 else 0) for x in row]
+
+        output[i] = copy.deepcopy(normalized)
+
+    return output
+
+    # shape = data.shape
+    # data = data.flatten()
+
+    # pos = [x for x in data if x > 0]
+    # neg = [x for x in data if x < 0]
+
+    # normalized = []
+
+    # if pos and not neg:
+    #     mean_pos = sum(pos) / len(pos)
+    #     normalized = [(x - mean_pos) / (max(pos) - mean_pos) for x in data]
+    # elif neg and not pos:
+    #     mean_neg = sum(neg) / len(neg)
+    #     normalized = [(x - mean_neg) / (mean_neg - min(neg)) for x in data]
+    # else:
+    #     max_pos = max(pos, default=0)
+    #     min_neg = min(neg, default=0)
+    #     normalized = [(x / max_pos if x > 0 else x / abs(min_neg) if x < 0 else 0) for x in data]
+
+    # return np.array(normalized).reshape(shape)
 
 
 def parse_condition(condition: str):

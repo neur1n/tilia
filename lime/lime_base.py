@@ -179,7 +179,6 @@ class LimeBase(object):
             score is the R^2 value of the returned explanation
             local_pred is the prediction of the explanation model on the original instance
         """
-
         weights = self.kernel_fn(distances)
         labels_column = neighborhood_labels[:, label]
         used_features = self.feature_selection(neighborhood_data,
@@ -187,12 +186,17 @@ class LimeBase(object):
                                                weights,
                                                num_features,
                                                feature_selection)
+
+        if max_depth == "adaptive":
+            max_depth = np.clip(int(np.ceil(np.log2(used_features.shape[0]))), 4, 10)
+            print(f"Adaptive max_depth: {max_depth}")
+
         if model_regressor is None:
             model_regressor = Ridge(alpha=1, fit_intercept=True,
                                     random_state=self.random_state)
-        elif model_regressor == "tree":
+        elif model_regressor == "dt":
             model_regressor = sklearn.tree.DecisionTreeRegressor(
-                    max_depth=max_depth, random_state=self.random_state)
+                    random_state=self.random_state)
         easy_model = model_regressor
         easy_model.fit(neighborhood_data[:, used_features],
                        labels_column, sample_weight=weights)

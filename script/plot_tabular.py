@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 import os
 import sys
@@ -22,9 +23,9 @@ import util
 
 
 dataset = [
-        # dataset.Dataset("breast-cancer", "classification"),
-        # dataset.Dataset("digits", "classification"),
-        dataset.Dataset("iris", "classification"),
+        # dataset.Dataset("iris", "classification", openml_id=61),
+        dataset.Dataset("diabetes", "classification", openml_id=37),
+        # dataset.Dataset("liver-disorders", "classification", openml_id=8),
         ]
 
 
@@ -35,41 +36,25 @@ if __name__ == "__main__":
     ap.add_argument("-t", "--timestamp", default=None, required=False, help="Timestamp")
     args = ap.parse_args()
 
-    # NOTE: `None` is for linear.
-    if args.regressor == "tree":
-        config.REGRESSOR = args.regressor
-
-    timpstamp: str
-    if args.timestamp:
-        timestamp = args.timestamp
-    else:
-        timestamp = datetime.datetime.now().strftime("%Y%m%d")
+    if args.timestamp is None:
+        args.timestamp = datetime.datetime.now().strftime("%Y%m%d")
 
     bunch: sklearn.utils.Bunch
 
     for ds in dataset:
-        if ds.name == "breast-cancer":
-            bunch = sklearn.datasets.load_breast_cancer()  # type: ignore
-            ds.label = bunch.target_names
-            ds.feature = bunch.feature_names
-        elif ds.name == "digits":
-            bunch = sklearn.datasets.load_digits()  # type: ignore
-            ds.label = bunch.target_names
-            ds.feature = bunch.feature_names
-        elif ds.name == "iris":
-            bunch = sklearn.datasets.load_iris()  # type: ignore
-            ds.label = bunch.target_names
-            ds.feature = bunch.feature_names
-        else:
-            pass
-            # X, y = sklearn.datasets.load_svmlight_file(f"../dataset/{ds.name}")
+        input_dir = f"{config.ROOT_DIR}/output/{args.timestamp}/{ds.name}/{args.regressor}"
+        output_dir = f"{input_dir}/fig"
+        os.makedirs(output_dir, exist_ok=True)
 
-        input_dir = f"{config.ROOT_DIR}/output/{timestamp}/{ds.name}/{config.REGRESSOR}"
+        bunch = sklearn.datasets.fetch_openml(data_id=ds.openml_id)  # type: ignore
+        X, y = bunch.data.to_numpy(), bunch.target.to_numpy()
+        ds.label = np.unique(y).tolist()
+        ds.feature = bunch.feature_names
 
         importance = {}
         stability = {}
 
-        for l in range(len(ds.label)):
+        for l in ds.label:
             local_importance = collections.defaultdict(int)
             local_stability = collections.defaultdict(float)
 
@@ -94,9 +79,12 @@ if __name__ == "__main__":
         all_feature = sorted(all_feature, key=util.feature_key)
 
         matrix = np.zeros((len(importance), len(all_feature)))
-        for lbl, imp in importance.items():
-            for i, feat in enumerate(all_feature):
-                matrix[lbl, i] = imp.get(feat, 0)
+        for i, (_, imp) in enumerate(importance.items()):
+            for j, feat in enumerate(all_feature):
+                matrix[i, j] = imp.get(feat, 0)
+
+        if args.data == "sum":
+            matrix = util.normalize_with_mean_reference(matrix)
 
         """ Plot with matshow """
         # FIXME: Have problem with the colorbar when using [-1, 1].
@@ -109,36 +97,61 @@ if __name__ == "__main__":
             vmin = -1.0
             vmax = 1.0
         elif args.data == "binned_sum":
-            vmin = config.REPEAT * (-2.0)
-            vmax = config.REPEAT * 2.0
+            vmin = len(config.SEED) * (-2.0)
+            vmax = len(config.SEED) * 2.0
         else:
             raise ValueError(f"Unknown --data: {args.data}")
 
-        cax: matplotlib.image.AxesImage
-        fig, axes = plt.subplots(1, len(ds.label), figsize=(18, 6))
+        fig, ax = plt.subplots(figsize=config.figsize(len(ds.feature), len(ds.label)))
+        cax = ax.matshow(matrix, cmap="coolwarm", vmin=vmin, vmax=vmax)
 
-        fig.suptitle(f"Dataset: {ds.name} Interpretor: {config.REGRESSOR if config.REGRESSOR else 'linear'} importance: {args.data}")
+        for i in range(matrix.shape[0]):
+            for j in range(matrix.shape[1]):
+                cell_value = stability[list(importance.keys())[i]].get(all_feature[j], 0.0)
+                ax.text(j, i, f"{cell_value:.2f}", va="center", ha="center", color="black", fontsize=10)
 
-        for i, (lbl, ax) in enumerate(zip(importance.keys(), axes)):
-            vector: np.ndarray
-            if args.data == "sum":
-                vector = util.normalize(matrix[i:i+1], lower=vmin, upper=vmax).T
-            else:
-                vector = matrix[i:i+1].T
-            cax = ax.matshow(vector, cmap="coolwarm", vmin=vmin, vmax=vmax)
+        # Configure axes
+        ax.set_xticks(range(len(all_feature)))
+        ax.set_xticklabels(all_feature, rotation=45, ha="left")
+        ax.set_yticks(range(len(importance.keys())))
+        ax.set_yticklabels(ds.label)
 
-            for j, feat in enumerate(all_feature):
-                ax.text(
-                        1.1, j,
-                        f"{stability[lbl].get(feat, 0.0):.2f}",
-                        va="center", ha="left", color="black", fontsize=10,
-                        transform=ax.get_yaxis_transform()
-                        )
+        fig.colorbar(cax, ax=ax, orientation="horizontal")
+        fig.suptitle(f"Feature Importance and Stability of Dataset {ds.name} (Explainer: {config.EXPLAINER[str(args.regressor)]})")
 
-            ax.set_xticks([0])
-            ax.set_xticklabels([ds.label[lbl]])
-            ax.set_yticks(range(len(all_feature)))
-            ax.set_yticklabels(all_feature)
+        plt.tight_layout()
+        plt.savefig(f"{output_dir}/{datetime.datetime.now().strftime('%H%M%S')}.png")
 
-        fig.colorbar(cax, ax=axes, orientation="vertical")  # type: ignore
-        plt.show()
+
+
+
+
+        # cax: matplotlib.image.AxesImage
+        # fig, axes = plt.subplots(1, len(ds.label), figsize=(30, 12))
+
+        # fig.suptitle(f"Dataset: {ds.name} Interpretor: {args.regressor if args.regressor else 'linear'} importance: {args.data}")
+
+        # for i, (lbl, ax) in enumerate(zip(importance.keys(), axes)):
+        #     vector: np.ndarray
+        #     if args.data == "sum":
+        #         # vector = util.normalize(matrix[i:i+1], lower=vmin, upper=vmax).T
+        #         vector = util.normalize_with_mean_reference(matrix[i:i+1]).T
+        #     else:
+        #         vector = matrix[i:i+1].T
+        #     cax = ax.matshow(vector, cmap="coolwarm", vmin=vmin, vmax=vmax)
+
+        #     for j, feat in enumerate(all_feature):
+        #         ax.text(
+        #                 1.1, j,
+        #                 f"{stability[lbl].get(feat, 0.0):.2f}",
+        #                 va="center", ha="left", color="black", fontsize=10,
+        #                 transform=ax.get_yaxis_transform()
+        #                 )
+
+        #     ax.set_xticks([0])
+        #     ax.set_xticklabels([ds.label[lbl]])
+        #     ax.set_yticks(range(len(all_feature)))
+        #     ax.set_yticklabels(all_feature)
+
+        # fig.colorbar(cax, ax=axes, orientation="vertical")  # type: ignore
+        # plt.savefig(f"{output_dir}/{datetime.datetime.now().strftime('%H%M%S')}.png")

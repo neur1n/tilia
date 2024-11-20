@@ -8,7 +8,7 @@ The following prerequisites may not be strictly necessary, but they are the
 versions that the code was tested with.
 
 - Python >= 3.10
-- PyTorch >= 2.5.1+cu124 (optional for image explanations)
+- TensorFlow >= 2.18.0 (optional for image explanations)
 
 
 ## 2 Getting Started
