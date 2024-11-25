@@ -189,14 +189,14 @@ class LimeBase(object):
 
         if max_depth == "adaptive":
             max_depth = np.clip(int(np.ceil(np.log2(used_features.shape[0]))), 4, 10)
-            print(f"Adaptive max_depth: {max_depth}")
+            # print(f"Adaptive max_depth: {max_depth}")
 
         if model_regressor is None:
             model_regressor = Ridge(alpha=1, fit_intercept=True,
                                     random_state=self.random_state)
-        elif model_regressor == "dt":
+        elif model_regressor == "dtr":
             model_regressor = sklearn.tree.DecisionTreeRegressor(
-                    random_state=self.random_state)
+                    max_depth=max_depth, random_state=self.random_state)
         easy_model = model_regressor
         easy_model.fit(neighborhood_data[:, used_features],
                        labels_column, sample_weight=weights)

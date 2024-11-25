@@ -23,6 +23,7 @@ def bin_importance(value, positive_quantile, negative_quantile):
 
 
 def feature_key(feature: str):
+    # NOTE: <num> <op> <feature> <op> <num>
     match = re.match(r"(?:(-?\d+(?:\.\d+)?)\s*)?([<>]=?|=)?\s*([\w\s()]+)\s*([<>]=?|=)?\s*(?:(-?\d+(?:\.\d+)?))?", feature)
     assert match, f"Invalid feature: {feature}"
 
@@ -30,15 +31,16 @@ def feature_key(feature: str):
     upper = None
     name = match.group(3).strip()
 
-    if match.group(2) in ["<", "<="]:
-        upper = match.group(5) if match.group(5) else match.group(1)
-    elif match.group(2) in [">", ">="]:
-        lower = match.group(1)
-
-    if match.group(4) in ["<", "<="]:
-        upper = match.group(5)
-    elif match.group(4) in [">", ">="]:
+    if match.group(4) in [">", ">="]:
         lower = match.group(5)
+        upper = float("inf")
+    elif match.group(4) in ["<", "<="]:
+        upper = match.group(5)
+
+    if match.group(2) in [">", ">="]:
+        upper = match.group(1)
+    elif match.group(2) in ["<", "<="]:
+        lower = match.group(1)
 
     lower = float(lower) if lower is not None else float("-inf")
     upper = float(upper) if upper is not None else float("inf")
@@ -70,10 +72,18 @@ def normalize_with_mean_reference(data: np.ndarray) -> np.ndarray:
 
         if pos and not neg:
             mean_pos = sum(pos) / len(pos)
-            normalized = [(x - mean_pos) / (max(pos) - mean_pos) for x in row]
+            for x in row:
+                if x == 0:
+                    normalized.append(x)
+                else:
+                    normalized.append((x - mean_pos) / (max(pos) - mean_pos))
         elif neg and not pos:
             mean_neg = sum(neg) / len(neg)
-            normalized = [(x - mean_neg) / (mean_neg - min(neg)) for x in row]
+            for x in row:
+                if x == 0:
+                    normalized.append(x)
+                else:
+                    normalized.append((x - mean_neg) / (mean_neg - min(neg)))
         else:
             max_pos = max(pos, default=0)
             min_neg = min(neg, default=0)

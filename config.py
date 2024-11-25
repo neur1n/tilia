@@ -7,7 +7,15 @@ import os
 
 DELIMITER = ","
 
-EXPLAINER = {"None": "Ridge", "dt": "DecisionTreeRegressor"}
+EXPLAINER = {"None": "Ridge", "dtr": "DecisionTreeRegressor"}
+
+FIGSIZE = {
+        "diabetes": (6, 9),  # TODO
+        "glass": (6, 9),  # TODO
+        "iris": (6, 9),
+        "liver-disorders": (6, 9),  # TODO
+        "skin-segmentation": (6, 9),  # TODO
+        }
 
 ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
 
@@ -21,13 +29,14 @@ def figsize(n_feature: int, n_label: int) -> tuple:
     The reference figure size is determined by the number of features and
     labels in the reference dataset `iris`.
     """
+    xtick_offset = 3
     ref_w = 12
     ref_h = 6
     ref_n_feature = 4
-    ref_n_label = 3 + 3  # `3` for the x tick texts.
+    ref_n_label = 3 + xtick_offset
 
     scale_w = n_feature / ref_n_feature
-    scale_h = (n_label + 3) / ref_n_label
+    scale_h = (n_label + xtick_offset) / ref_n_label
     return (int(ref_w * scale_w), int(ref_h * scale_h))
 
 

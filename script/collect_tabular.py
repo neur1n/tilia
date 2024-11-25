@@ -19,6 +19,7 @@ import sklearn.metrics
 import sklearn.model_selection
 import sklearn.tree
 import sklearn.utils
+import tqdm
 
 import config
 import dataset
@@ -28,9 +29,11 @@ import util
 
 
 dataset = [
-        # dataset.Dataset("iris", "classification", openml_id=61),
-        dataset.Dataset("diabetes", "classification", openml_id=37),
-        # dataset.Dataset("liver-disorders", "classification", openml_id=8),
+        # dataset.Dataset("liver-disorders", "classification", openml_id=8),       # ridge: (0.36, 0.??), dtr: (0.33, 1.00)
+        # dataset.Dataset("diabetes", "classification", openml_id=37),             # ridge: (0.76, 0.??), dtr: (0.75, 1.00)
+        # dataset.Dataset("glass", "classification", openml_id=41),                # ridge: (0.81, 0.??), dtr: (0.97, 1.00)
+        dataset.Dataset("iris", "classification", openml_id=61),                 # ridge: (1.00, 0.??), dtr: (1.00, 1.00)
+        # dataset.Dataset("skin-segmentation", "classification", openml_id=1502),  # ridge: (1.00, 0.??), dtr: (1.00, 1.00)
         ]
 
 
@@ -38,6 +41,7 @@ if __name__ == '__main__':
     ap = argparse.ArgumentParser()
     ap.add_argument("-k", "--topk", default=5, type=int, required=False, help="Top-k features.")
     ap.add_argument("-r", "--regressor", default=None, type=str, required=False, help="Regressor, linear, dt, gbdt, or rf.")
+    ap.add_argument("-s", "--sample", default=-1, type=int, required=False, help="Number of samples to explain.")
     ap.add_argument("-t", "--timestamp", default=None, type=str, required=False, help="Timestamp.")
     args = ap.parse_args()
 
@@ -58,11 +62,22 @@ if __name__ == '__main__':
 
         bunch = sklearn.datasets.fetch_openml(data_id=ds.openml_id)  # type: ignore
         X, y = bunch.data.to_numpy(), bunch.target.to_numpy()
+
+        # NOTE: The labels of `liver-disorders` are numeric.
+        if np.issubdtype(X.dtype, np.number):
+            y = y.astype(str)
+
+        # NOTE: There is only one instance with the label "15.0" in `liver-disorders`.
+        if ds.name == "liver-disorders":
+            outlier_idx = np.where(y == "15.0")
+            X = np.delete(X, outlier_idx, axis=0)
+            y = np.delete(y, outlier_idx, axis=0)
+
         ds.label = np.unique(y).tolist()
         ds.feature = bunch.feature_names
 
         n_feature = min(100, X.shape[1])
-        max_depth = "adaptive" if args.regressor is not None else 0
+        max_depth = None if args.regressor is not None else 0
 
         X_train, X_test, y_train, y_test = \
                 sklearn.model_selection.train_test_split(
@@ -70,18 +85,20 @@ if __name__ == '__main__':
 
         black_box = sklearn.ensemble.RandomForestClassifier()
         black_box.fit(X_train, y_train)
+        print(f"Black box score: {black_box.score(X_test, y_test)}")
 
-        score = sklearn.metrics.accuracy_score(y_test, black_box.predict(X_test))
-        print(f"Black box score: {score}")
 
-        for idx in range(min(30, len(X_test))):
-        # for idx in range(2):
+        if args.sample <= 0:
+            args.sample = len(X_test)
+        else:
+            args.sample = min(args.sample, len(X_test))
+
+        for idx in tqdm.tqdm(range(args.sample), desc="Sample"):
+        # for idx in tqdm.tqdm(range(2)):
             df = [pd.DataFrame() for _ in range(len(ds.label))]
 
-            print("\n============================================================")
-            print(f"Explaining {idx}/{len(X_test) - 1} {ds.name} (ground truth: {y_test[idx]})...")
-            for seed in config.SEED:
-                exp = lime.lime_tabular.LimeTabularExplainer(
+            for seed in tqdm.tqdm(config.SEED, desc="Seed", leave=False):
+                explainer = lime.lime_tabular.LimeTabularExplainer(
                         training_data=X_train,
                         mode=ds.task,
                         training_labels=y_train,
@@ -91,39 +108,67 @@ if __name__ == '__main__':
                         class_names=ds.label,
                         random_state=seed)
 
-                exp_inst = exp.explain_instance(
+                exp_inst = explainer.explain_instance(
                         data_row=X_test[idx],
                         predict_fn=black_box.predict_proba,
                         labels=[l for l in range(len(ds.label))],
                         num_features=n_feature,
                         model_regressor=args.regressor,
                         max_depth=max_depth)
-                exp_inst.save_to_file(f"{output_dir}/lbl{y_test[idx]}_samp{idx}_seed{seed}.html")
+                # exp_inst.save_to_file(f"{output_dir}/lbl{y_test[idx]}_samp{idx}_seed{seed}.html")
 
-                for l in range(len(ds.label)):
-                    explanation: list[tuple] = exp_inst.as_list(label=l)
+                if args.regressor is None:
+                    for l in range(len(ds.label)):
+                        explanation: list[tuple] = exp_inst.as_list(label=l)
 
-                    importance = [e[1] for e in explanation]
-                    pos_i = [imp for imp in importance if imp > 0]
-                    neg_i = [imp for imp in importance if imp < 0]
+                        importance = [e[1] for e in explanation]
+                        pos_i = [imp for imp in importance if imp > 0]
+                        neg_i = [imp for imp in importance if imp < 0]
 
-                    pos_q = None
-                    neg_q = None
+                        pos_q = None
+                        neg_q = None
 
-                    if len(pos_i) > 0:
-                        pos_q = np.percentile(pos_i, [50])
+                        if len(pos_i) > 0:
+                            pos_q = np.percentile(pos_i, [50])
 
-                    if len(neg_i) > 0:
-                        neg_q = np.percentile(neg_i, [50])
+                        if len(neg_i) > 0:
+                            neg_q = np.percentile(neg_i, [50])
 
-                    # NOTE: <feature>:<importance>:<binned importance>
-                    # NOTE: Keeping `feature` for FP-Growth compatibility.
-                    formatted = {e[0]: f"{e[0]}:{e[1]}:{util.bin_importance(e[1], pos_q, neg_q)}" for e in explanation}
-                    new_row = pd.DataFrame([formatted])
-                    df[l] = pd.concat([df[l], new_row], ignore_index=False)
+                        # NOTE: <feature>:<importance>:<binned importance>
+                        # NOTE: Keeping `feature` for FP-Growth compatibility.
+                        formatted = {e[0]: f"{e[0]}:{e[1]:.2f}:{util.bin_importance(e[1], pos_q, neg_q)}" for e in explanation}
+                        new_row = pd.DataFrame([formatted], index=[seed])
+                        df[l] = pd.concat([df[l], new_row], ignore_index=False)
+                else:
+                    explanation = [None for _ in range(len(ds.label))]  # type: ignore
+                    importance = np.zeros((len(ds.label), len(ds.feature)))
 
-            print("\n============================================================")
-            print("Calculating accumulated importance and stability metrics...")
+                    for l in range(len(ds.label)):
+                        explanation[l] = exp_inst.as_list(label=l)
+                        for c, e in enumerate(explanation[l]):
+                            importance[l, c] = e[1]
+                    zero_ref = np.mean(importance, axis=0)
+                    importance -= zero_ref
+
+                    for l in range(len(ds.label)):
+                        pos_i = [imp for imp in importance[l] if imp > 0]
+                        neg_i = [imp for imp in importance[l] if imp < 0]
+
+                        pos_q = None
+                        neg_q = None
+
+                        if len(pos_i) > 0:
+                            pos_q = np.percentile(pos_i, [50])
+
+                        if len(neg_i) > 0:
+                            neg_q = np.percentile(neg_i, [50])
+
+                        formatted = {}
+                        for c, (f, _) in enumerate(explanation[l]):
+                            formatted[f] = f"{f}:{importance[l, c]}:{util.bin_importance(importance[l, c], pos_q, neg_q)}"
+                        new_row = pd.DataFrame([formatted], index=[seed])
+                        df[l] = pd.concat([df[l], new_row], ignore_index=False)
+
             """
             NOTE: The feature importance used by linear models is different
                   from the one used by tree-based models. For linear models,
@@ -141,6 +186,8 @@ if __name__ == '__main__':
                 var = {}  # variance
 
                 for feature, column in df[l].items():
+                    column.dropna(inplace=True)
+
                     importance = []
                     binned_importance = []
                     for item in column:
@@ -168,7 +215,7 @@ if __name__ == '__main__':
                 df_var = pd.DataFrame(var, index=["var"])
                 df[l] = pd.concat([df[l], df_mode, df_sum, df_binned_sum, df_ent, df_aad, df_var])
 
-                file = f"{output_dir}/lbl{y_test[idx]}_exp{l}_samp{idx}.csv"
+                file = f"{output_dir}/lbl{y_test[idx]}_samp{idx}_exp{ds.label[l]}.csv"
                 df[l].to_csv(file, sep=config.DELIMITER, index=True)
 
             #     spark = pyspark.sql.SparkSession.builder.appName("LIME").getOrCreate()
