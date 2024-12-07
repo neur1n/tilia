@@ -71,3 +71,7 @@ if __name__ == "__main__":
 
     sim = jaccard_index(a, b)
     print(sim)
+
+    a = [0.0, 1.0, 0.0]
+    b = [0.2, 0.6, 0.2]
+    print(1 - scipy.spatial.distance.cosine(a, b))

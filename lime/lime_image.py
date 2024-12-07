@@ -223,6 +223,8 @@ class LimeImageExplainer(object):
                 model_regressor=model_regressor,
                 max_depth=max_depth)
 
+            # print(f"{label}: {ret_exp.score[label]}\n{ret_exp.local_exp[label]}\n\n")
+            print(f"{label}: {ret_exp.score[label]}")
         return ret_exp
 
     def data_labels(self,

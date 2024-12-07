@@ -9,7 +9,7 @@ import warnings
 
 import numpy as np
 import scipy as sp
-import sklearn
+import sklearn.metrics
 import sklearn.preprocessing
 from sklearn.utils import check_random_state
 
@@ -21,6 +21,8 @@ from lime.discretize import StatsDiscretizer
 from . import explanation
 from . import lime_base
 
+import sklearn.linear_model
+import sklearn.tree
 
 class TableDomainMapper(explanation.DomainMapper):
     """Maps feature ids to names, generates table views, etc"""
@@ -293,6 +295,30 @@ class LimeTabularExplainer(object):
         if len(missing_keys) > 0:
             raise Exception("Missing keys in training_data_stats. Details: %s" % (missing_keys))
 
+    def sample_filter(self, sample: np.ndarray,
+                      label: np.ndarray,
+                      predict_fn,
+                      model_regressor=None) -> np.ndarray:
+        if model_regressor is None:
+            model_regressor = sklearn.linear_model.Ridge(
+                    alpha=1, fit_intercept=True, random_state=self.random_state)
+        elif model_regressor == "dtr":
+            model_regressor = sklearn.tree.DecisionTreeRegressor(
+                    random_state=self.random_state)
+
+        easy_model = model_regressor
+        easy_model.fit(sample, label)
+
+        y_true: np.ndarray = predict_fn(sample)
+        y_pred: np.ndarray = easy_model.predict(sample)
+
+        diff: np.ndarray = np.mean(np.abs(y_true - y_pred), axis=1)
+        thres: float = diff.mean() * 0.5
+
+        filter: np.ndarray = np.where(diff <= thres)[0]
+
+        return filter
+
     def explain_instance(self,
                          data_row,
                          predict_fn,
@@ -302,7 +328,7 @@ class LimeTabularExplainer(object):
                          num_samples=5000,
                          distance_metric='euclidean',
                          model_regressor=None,
-                         max_depth=None):
+                         return_surrogate=False):
         """Generates explanations for a prediction.
 
         First, we generate neighborhood data by randomly perturbing features
@@ -335,6 +361,10 @@ class LimeTabularExplainer(object):
             An Explanation object (see explanation.py) with the corresponding
             explanations.
         """
+        surrogate_model = {}
+        X_perturbed = {}
+        y_perturbed = {}
+
         if sp.sparse.issparse(data_row) and not sp.sparse.isspmatrix_csr(data_row):
             # Preventative code: if sparse, convert to csr format if not in csr format already
             data_row = data_row.tocsr()
@@ -347,11 +377,19 @@ class LimeTabularExplainer(object):
                 scaled_data = scaled_data.tocsr()
         else:
             scaled_data = (data - self.scaler.mean_) / self.scaler.scale_
-        distances = sklearn.metrics.pairwise_distances(
-                scaled_data,
-                scaled_data[0].reshape(1, -1),
-                metric=distance_metric
-        ).ravel()
+
+        if model_regressor == "dtr":
+            distances = sklearn.metrics.pairwise_distances(
+                    inverse,
+                    inverse[0].reshape(1, -1),
+                    metric=distance_metric
+            ).ravel()
+        else:
+            distances = sklearn.metrics.pairwise_distances(
+                    scaled_data,
+                    scaled_data[0].reshape(1, -1),
+                    metric=distance_metric
+            ).ravel()
 
         yss = predict_fn(inverse)
 
@@ -429,7 +467,7 @@ class LimeTabularExplainer(object):
 
         domain_mapper = TableDomainMapper(feature_names,
                                           values,
-                                          inverse[0] if model_regressor == "tree" else scaled_data[0],
+                                          inverse[0] if model_regressor == "dtr" else scaled_data[0],
                                           categorical_features=categorical_features,
                                           discretized_feature_names=discretized_feature_names,
                                           feature_indexes=feature_indexes)
@@ -450,7 +488,8 @@ class LimeTabularExplainer(object):
         for label in labels:
             (ret_exp.intercept[label],
              ret_exp.local_exp[label],
-             ret_exp.score[label], ret_exp.local_pred[label]) = self.base.explain_instance_with_data(
+             ret_exp.score[label], ret_exp.local_pred[label],
+             surrogate_model[label], X_perturbed[label], y_perturbed[label]) = self.base.explain_instance_with_data(
                     inverse if model_regressor == "dtr" else scaled_data,
                     yss,
                     distances,
@@ -458,14 +497,17 @@ class LimeTabularExplainer(object):
                     num_features,
                     feature_selection=self.feature_selection,
                     model_regressor=model_regressor,
-                    max_depth=max_depth)
+                    return_surrogate=return_surrogate)
 
         if self.mode == "regression":
             ret_exp.intercept[1] = ret_exp.intercept[0]
             ret_exp.local_exp[1] = [x for x in ret_exp.local_exp[0]]
             ret_exp.local_exp[0] = [(i, -1 * j) for i, j in ret_exp.local_exp[1]]
 
-        return ret_exp
+        if return_surrogate:
+            return ret_exp, surrogate_model, X_perturbed, y_perturbed
+        else:
+            return ret_exp
 
     def __data_inverse(self,
                        data_row,

@@ -5,6 +5,7 @@ import numpy as np
 import scipy as sp
 from sklearn.linear_model import Ridge, lars_path
 from sklearn.utils import check_random_state
+import sklearn.model_selection
 import sklearn.tree
 
 
@@ -143,7 +144,7 @@ class LimeBase(object):
                                    num_features,
                                    feature_selection='auto',
                                    model_regressor=None,
-                                   max_depth=None):
+                                   return_surrogate=False):
         """Takes perturbed data, labels and distances, returns explanation.
 
         Args:
@@ -187,22 +188,34 @@ class LimeBase(object):
                                                num_features,
                                                feature_selection)
 
-        if max_depth == "adaptive":
-            max_depth = np.clip(int(np.ceil(np.log2(used_features.shape[0]))), 4, 10)
-            # print(f"Adaptive max_depth: {max_depth}")
-
         if model_regressor is None:
             model_regressor = Ridge(alpha=1, fit_intercept=True,
                                     random_state=self.random_state)
+            model_regressor.fit(
+                    neighborhood_data[:, used_features], labels_column, sample_weight=weights)
+            prediction_score = model_regressor.score(
+                neighborhood_data[:, used_features],
+                labels_column, sample_weight=weights)
         elif model_regressor == "dtr":
+            X_train, X_test, y_train, y_test, w_train, w_test = \
+                    sklearn.model_selection.train_test_split(
+                            neighborhood_data[:, used_features], labels_column, weights,
+                            train_size=0.8, random_state=42)  # type: ignore
             model_regressor = sklearn.tree.DecisionTreeRegressor(
-                    max_depth=max_depth, random_state=self.random_state)
+                    random_state=self.random_state)
+            param = {"max_depth": range(2, 10)}
+            kfold = sklearn.model_selection.KFold(2, shuffle=True, random_state=self.random_state)
+            search = sklearn.model_selection.GridSearchCV(model_regressor, param, cv=kfold)
+            with np.errstate(invalid="ignore"):
+                search.fit(X_train, y_train, sample_weight=w_train)
+            model_regressor = search.best_estimator_
+            prediction_score = model_regressor.score(X_test, y_test, sample_weight=w_test)
         easy_model = model_regressor
-        easy_model.fit(neighborhood_data[:, used_features],
-                       labels_column, sample_weight=weights)
-        prediction_score = easy_model.score(
-            neighborhood_data[:, used_features],
-            labels_column, sample_weight=weights)
+        # easy_model.fit(neighborhood_data[:, used_features],
+        #                labels_column, sample_weight=weights)
+        # prediction_score = easy_model.score(
+        #     neighborhood_data[:, used_features],
+        #     labels_column, sample_weight=weights)
 
         local_pred = easy_model.predict(neighborhood_data[0, used_features].reshape(1, -1))
 
@@ -217,14 +230,23 @@ class LimeBase(object):
             # NOTE: It does not lead to good visualization or interpretation.
             # NOTE: Instead, just use all possitive importances and normalize
             #       them to [-1, 1].
-            # if label != neighborhood_labels[0].argmax():
-            #     importance = -importance
+            if label != neighborhood_labels[0].argmax():
+                importance = -importance
 
         if self.verbose:
             print('Intercept', easy_model.intercept_)
             print('Prediction_local', local_pred,)
             print('Right:', neighborhood_labels[0, label])
-        return (easy_model.intercept_,
-                sorted(zip(used_features, importance),
-                       key=lambda x: np.abs(x[1]), reverse=True),
-                prediction_score, local_pred)
+
+        if return_surrogate:
+            return (easy_model.intercept_,
+                    sorted(zip(used_features, importance),
+                           key=lambda x: np.abs(x[1]), reverse=True),
+                    prediction_score, local_pred,
+                    easy_model, neighborhood_data[:, used_features], labels_column)
+        else:
+            return (easy_model.intercept_,
+                    sorted(zip(used_features, importance),
+                           key=lambda x: np.abs(x[1]), reverse=True),
+                    prediction_score, local_pred,
+                    None, None, None)

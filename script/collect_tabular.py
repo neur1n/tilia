@@ -6,6 +6,7 @@ import sys
 sys.path.append(os.path.abspath(os.path.dirname(__file__) + "/.."))
 
 import argparse
+import collections
 import datetime
 import numpy as np
 import pandas as pd
@@ -29,11 +30,12 @@ import util
 
 
 dataset = [
-        # dataset.Dataset("liver-disorders", "classification", openml_id=8),       # ridge: (0.36, 0.??), dtr: (0.33, 1.00)
-        # dataset.Dataset("diabetes", "classification", openml_id=37),             # ridge: (0.76, 0.??), dtr: (0.75, 1.00)
-        # dataset.Dataset("glass", "classification", openml_id=41),                # ridge: (0.81, 0.??), dtr: (0.97, 1.00)
-        dataset.Dataset("iris", "classification", openml_id=61),                 # ridge: (1.00, 0.??), dtr: (1.00, 1.00)
-        # dataset.Dataset("skin-segmentation", "classification", openml_id=1502),  # ridge: (1.00, 0.??), dtr: (1.00, 1.00)
+        dataset.Dataset("iris", "classification", openml_id=61),
+        # dataset.Dataset("glass", "classification", openml_id=41),
+        # dataset.Dataset("ionosphere", "classification", openml_id=59),
+        # dataset.Dataset("fri_c4_1000_100", "classification", openml_id=718),
+        # dataset.Dataset("tecator", "classification", openml_id=851),
+        # dataset.Dataset("clean1", "classification", openml_id=40665),
         ]
 
 
@@ -76,17 +78,17 @@ if __name__ == '__main__':
         ds.label = np.unique(y).tolist()
         ds.feature = bunch.feature_names
 
-        n_feature = min(100, X.shape[1])
-        max_depth = None if args.regressor is not None else 0
+        n_feature = X.shape[1]
+        max_depth = "adaptive" if args.regressor is not None else 0
 
         X_train, X_test, y_train, y_test = \
                 sklearn.model_selection.train_test_split(
                         X, y, train_size=0.8, random_state=42)  # type: ignore
 
-        black_box = sklearn.ensemble.RandomForestClassifier()
-        black_box.fit(X_train, y_train)
-        print(f"Black box score: {black_box.score(X_test, y_test)}")
-
+        opaque_model = sklearn.ensemble.RandomForestClassifier()
+        opaque_model.fit(X_train, y_train)
+        # print(f"Name | Classes | Features | Instances | Score")
+        print(f"{ds.name} & {len(ds.label)} & {X.shape[1]} & {X.shape[0]} & {opaque_model.score(X_test, y_test):.2f}\n")
 
         if args.sample <= 0:
             args.sample = len(X_test)
@@ -110,14 +112,14 @@ if __name__ == '__main__':
 
                 exp_inst = explainer.explain_instance(
                         data_row=X_test[idx],
-                        predict_fn=black_box.predict_proba,
+                        predict_fn=opaque_model.predict_proba,
                         labels=[l for l in range(len(ds.label))],
                         num_features=n_feature,
-                        model_regressor=args.regressor,
-                        max_depth=max_depth)
+                        model_regressor=args.regressor)
                 # exp_inst.save_to_file(f"{output_dir}/lbl{y_test[idx]}_samp{idx}_seed{seed}.html")
 
-                if args.regressor is None:
+                # if args.regressor is None:
+                if True:
                     for l in range(len(ds.label)):
                         explanation: list[tuple] = exp_inst.as_list(label=l)
 
@@ -129,17 +131,19 @@ if __name__ == '__main__':
                         neg_q = None
 
                         if len(pos_i) > 0:
-                            pos_q = np.percentile(pos_i, [50])
+                            # pos_q = np.percentile(pos_i, [50])
+                            pos_q = np.quantile(pos_i, 0.5)
 
                         if len(neg_i) > 0:
-                            neg_q = np.percentile(neg_i, [50])
+                            # neg_q = np.percentile(neg_i, [50])
+                            neg_q = np.quantile(neg_i, 0.5)
 
                         # NOTE: <feature>:<importance>:<binned importance>
                         # NOTE: Keeping `feature` for FP-Growth compatibility.
-                        formatted = {e[0]: f"{e[0]}:{e[1]:.2f}:{util.bin_importance(e[1], pos_q, neg_q)}" for e in explanation}
+                        formatted = {e[0]: f"{e[0]}:{e[1]}:{util.bin_importance(e[1], pos_q, neg_q)}" for e in explanation}
                         new_row = pd.DataFrame([formatted], index=[seed])
                         df[l] = pd.concat([df[l], new_row], ignore_index=False)
-                else:
+                else:  # NOTE: For mean-zero-reference approach
                     explanation = [None for _ in range(len(ds.label))]  # type: ignore
                     importance = np.zeros((len(ds.label), len(ds.feature)))
 

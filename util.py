@@ -9,12 +9,12 @@ import re
 
 def bin_importance(value, positive_quantile, negative_quantile):
     if value > 0:
-        if value <= positive_quantile[0]:
+        if value <= positive_quantile:
             return 1
         else:
             return 2
     elif value < 0:
-        if value <= negative_quantile[0]:
+        if value >= negative_quantile:
             return -1
         else:
             return -2
@@ -61,10 +61,21 @@ def normalize(data: np.ndarray, lower: float = 0.0, upper: float = 1.0, scale: f
     return scaled
 
 
+def normalize_rows_to_range(matrix, lower=-1, upper=1):
+    row_min = matrix.min(axis=1, keepdims=True)
+    row_max = matrix.max(axis=1, keepdims=True)
+    normalized = lower + (upper - lower) * (matrix - row_min) / (row_max - row_min + 1e-8)
+    return normalized
+
+
 def normalize_with_mean_reference(data: np.ndarray) -> np.ndarray:
     output = np.zeros_like(data)
 
     for i, row in enumerate(data):
+        if np.all(row == 0):
+            output[i] = copy.deepcopy(row)
+            continue
+
         pos = [x for x in row if x > 0]
         neg = [x for x in row if x < 0]
 

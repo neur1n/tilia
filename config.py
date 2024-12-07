@@ -9,18 +9,31 @@ DELIMITER = ","
 
 EXPLAINER = {"None": "Ridge", "dtr": "DecisionTreeRegressor"}
 
-FIGSIZE = {
-        "diabetes": (6, 9),  # TODO
-        "glass": (6, 9),  # TODO
-        "iris": (6, 9),
-        "liver-disorders": (6, 9),  # TODO
-        "skin-segmentation": (6, 9),  # TODO
+FIGSIZE ={
+        "h": {
+            "iris": (6, 8),
+            "glass": (12, 14),
+            "ionosphere": (30, 6),
+            "fri_c4_1000_100": (80, 6),  # NOTE: Barely readable
+            "tecator": (80, 6),  # NOTE: Barely readable
+            "clean1": (80, 9),  # NOTE: Barely readable
+            },
+        "v": {
+            "iris": (8, 6),
+            "glass": (14, 12),
+            "ionosphere": (6, 30),
+            "fri_c4_1000_100": (6, 9),  # TODO
+            "tecator": (6, 9),  # TODO
+            "clean1": (6, 9),  # TODO
+            },
         }
+
 
 ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
 
+# SEED = [3]
 SEED = [3, 11, 23, 37, 42]
-# SEED = [43, 43, 43, 43, 43]
+# SEED = [3, 3, 3, 3, 3]
 
 
 def figsize(n_feature: int, n_label: int) -> tuple:
