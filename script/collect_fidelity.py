@@ -66,7 +66,6 @@ if __name__ == '__main__':
         ds.feature = bunch.feature_names
 
         n_feature = X.shape[1]
-        max_depth = "adaptive" if args.regressor is not None else 0
 
         X_train, X_test, y_train, y_test = \
                 sklearn.model_selection.train_test_split(
@@ -109,8 +108,7 @@ if __name__ == '__main__':
                         predict_fn=best_opaque.predict_proba,
                         labels=[l for l in range(len(ds.label))],
                         num_features=n_feature,
-                        model_regressor=args.regressor,
-                        max_depth=max_depth)
+                        model_regressor=args.regressor)
 
                 fidelity[i * len(config.SEED) + j] = list(exp_inst.score.values())
 

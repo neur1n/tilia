@@ -377,19 +377,11 @@ class LimeTabularExplainer(object):
                 scaled_data = scaled_data.tocsr()
         else:
             scaled_data = (data - self.scaler.mean_) / self.scaler.scale_
-
-        if model_regressor == "dtr":
-            distances = sklearn.metrics.pairwise_distances(
-                    inverse,
-                    inverse[0].reshape(1, -1),
-                    metric=distance_metric
-            ).ravel()
-        else:
-            distances = sklearn.metrics.pairwise_distances(
-                    scaled_data,
-                    scaled_data[0].reshape(1, -1),
-                    metric=distance_metric
-            ).ravel()
+        distances = sklearn.metrics.pairwise_distances(
+                scaled_data,
+                scaled_data[0].reshape(1, -1),
+                metric=distance_metric
+        ).ravel()
 
         yss = predict_fn(inverse)
 
