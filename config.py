@@ -28,6 +28,16 @@ FIGSIZE ={
             },
         }
 
+FIGSIZE_v2 ={
+        "iris": (11.7, 3),
+        "phoneme": (8, 3.5),
+        "glass": (22, 6),
+        "diabetes": (11.3, 5),
+        "ionosphere": (30, 6),
+        "fri_c4_1000_100": (80, 6),  # NOTE: Barely readable
+        "tecator": (80, 6),  # NOTE: Barely readable
+        "clean1": (80, 9),  # NOTE: Barely readable
+        }
 
 ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
 

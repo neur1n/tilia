@@ -1,0 +1,5 @@
+font.family: serif
+font.serif: cm
+font.size: 20.0
+# hatch.linewidth: 3
+text.usetex: True

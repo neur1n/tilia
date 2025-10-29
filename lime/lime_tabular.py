@@ -21,8 +21,69 @@ from lime.discretize import StatsDiscretizer
 from . import explanation
 from . import lime_base
 
+import itertools
 import sklearn.linear_model
 import sklearn.tree
+import scipy.spatial.distance
+
+
+def generate_sample(instance: np.ndarray, predict_fn, num_samples: int) -> np.ndarray:
+    ref = predict_fn(np.array([instance]))[0]
+
+    buf = np.zeros((num_samples + 1, instance.shape[0]))
+    buf[0] = instance
+
+    cnt = 0
+    step = np.abs(instance) * 0.01
+    step[step == 0] = 0.01
+
+    comb = []
+    for k in range(1, instance.shape[0] + 1):
+        comb.extend(list(itertools.combinations(range(instance.shape[0]), k)))
+
+    igen = itertools.count(1, 1).__next__
+    dircnt = np.zeros(len(comb), dtype=int)
+    epoch = 0
+
+    while cnt < num_samples:
+        epoch += 1
+
+        for i, c in enumerate(comb):
+            iter = igen()
+
+            # One for positive direction, one for negative direction.
+            sample = [copy.deepcopy(instance), copy.deepcopy(instance)]
+            for f in c:
+                sample[0][f] += iter * step[f]
+                sample[1][f] += iter * (-step[f])
+
+            pre = predict_fn((sample[0]).reshape(1, -1))[0]
+            dist = scipy.spatial.distance.cosine(ref, pre)
+            if dist <= 0.5:
+                buf[cnt + 1] = sample[0]
+                cnt += 1
+                dircnt[i] += 1
+
+            if cnt >= num_samples:
+                return buf
+
+            pre = predict_fn((sample[1]).reshape(1, -1))[0]
+            dist = scipy.spatial.distance.cosine(ref, pre)
+            if dist <= 0.5:
+                buf[cnt + 1] = sample[1]
+                cnt += 1
+                dircnt[i] += 1
+
+            if cnt >= num_samples:
+                return buf
+
+        if epoch == 3:
+            maxcnt = np.max(dircnt)
+            thres = maxcnt * 0.5
+            comb = [comb[i] for i in range(len(comb)) if dircnt[i] > thres]
+
+    return buf
+
 
 class TableDomainMapper(explanation.DomainMapper):
     """Maps feature ids to names, generates table views, etc"""
@@ -365,6 +426,8 @@ class LimeTabularExplainer(object):
         X_perturbed = {}
         y_perturbed = {}
 
+        self.predict_fn = predict_fn
+
         if sp.sparse.issparse(data_row) and not sp.sparse.isspmatrix_csr(data_row):
             # Preventative code: if sparse, convert to csr format if not in csr format already
             data_row = data_row.tocsr()
@@ -544,6 +607,7 @@ class LimeTabularExplainer(object):
                 instance_sample = data_row[:, non_zero_indexes]
                 scale = scale[non_zero_indexes]
                 mean = mean[non_zero_indexes]
+            # data = generate_sample(data_row, self.predict_fn, num_samples)
             data = self.random_state.normal(
                 0, 1, num_samples * num_cols).reshape(
                 num_samples, num_cols)

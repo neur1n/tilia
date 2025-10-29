@@ -431,7 +431,7 @@ class LimeTabularExplainer(object):
 
         domain_mapper = TableDomainMapper(feature_names,
                                           values,
-                                          scaled_data[0],
+                                          inverse[0] if model_regressor == "dtr" else scaled_data[0],
                                           categorical_features=categorical_features,
                                           discretized_feature_names=discretized_feature_names,
                                           feature_indexes=feature_indexes)
@@ -453,7 +453,7 @@ class LimeTabularExplainer(object):
             (ret_exp.intercept[label],
              ret_exp.local_exp[label],
              ret_exp.score[label], ret_exp.local_pred[label]) = self.base.explain_instance_with_data(
-                    scaled_data,
+                    inverse if model_regressor == "dtr" else scaled_data,
                     yss,
                     distances,
                     label,

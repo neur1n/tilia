@@ -6,6 +6,7 @@ import sys
 sys.path.append(os.path.abspath(os.path.dirname(__file__) + "/.."))
 
 import argparse
+import csv
 import datetime
 import numpy as np
 import pandas as pd
@@ -19,6 +20,7 @@ import sklearn.metrics
 import sklearn.model_selection
 import sklearn.tree
 import sklearn.utils
+import time
 import tqdm
 
 import config
@@ -30,6 +32,8 @@ import BayLIME.lime_tabular
 
 dataset = [
         dataset.Dataset("iris", "classification", openml_id=61),
+        dataset.Dataset("phoneme", "classification", openml_id=1489),
+        dataset.Dataset("diabetes", "classification", openml_id=37),
         dataset.Dataset("glass", "classification", openml_id=41),
         dataset.Dataset("ionosphere", "classification", openml_id=59),
         dataset.Dataset("fri_c4_1000_100", "classification", openml_id=718),
@@ -45,6 +49,9 @@ if __name__ == '__main__':
     ap.add_argument("-s", "--sample", default=-1, type=int, required=False, help="Number of samples to explain.")
     ap.add_argument("-t", "--timestamp", default=None, type=str, required=False, help="Timestamp.")
     args = ap.parse_args()
+
+    if args.regressor == "linear":
+        args.regressor = None
 
     if args.timestamp is None:
         args.timestamp = datetime.datetime.now().strftime("%Y%m%d")
@@ -94,17 +101,19 @@ if __name__ == '__main__':
         else:
             args.sample = min(args.sample, len(X_test))
 
+        timing = []
         for idx in tqdm.tqdm(range(args.sample), desc="Sample"):
         # for idx in tqdm.tqdm(range(2)):
             df = [pd.DataFrame() for _ in range(len(ds.label))]
 
             for seed in tqdm.tqdm(config.SEED, desc="Seed", leave=False):
+                tic = time.perf_counter()
                 explainer = BayLIME.lime_tabular.LimeTabularExplainer(
                         training_data=X_train,
                         mode=ds.task,
                         training_labels=y_train,
                         feature_names=ds.feature,
-                        discretize_continuous=True,
+                        discretize_continuous=False,
                         discretizer="quartile",
                         class_names=ds.label,
                         random_state=seed)
@@ -114,8 +123,10 @@ if __name__ == '__main__':
                         predict_fn=opaque_model.predict_proba,
                         labels=[l for l in range(len(ds.label))],
                         num_features=n_feature,
-                        model_regressor="Bay_non_info_prior")
+                        model_regressor="Bay_non_info_prior" if args.regressor is None else args.regressor)
                 # exp_inst.save_to_file(f"{output_dir}/lbl{y_test[idx]}_samp{idx}_seed{seed}.html")
+                toc = time.perf_counter()
+                timing.append(toc - tic)
 
                 # if args.regressor is None:
                 if True:
@@ -232,3 +243,8 @@ if __name__ == '__main__':
 
             #     file = f"../output/{ds.name}_lbl{y_test[idx]}_exp{l}_{type(regressor).__name__}_fp_{timestamp}.csv"
             #     spark_df.toPandas().head(10).to_csv(file, sep=delimiter)
+
+        with open(f"{output_dir}/timing_{ds.name}.csv", "w", newline="", encoding="utf-8") as f:
+            writer = csv.writer(f)
+            for t in timing:
+                writer.writerow([t])

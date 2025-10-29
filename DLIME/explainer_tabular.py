@@ -448,10 +448,22 @@ class LimeTabularExplainer(object):
         data = np.zeros((samples.shape[0], data_row.shape[0]))
         categorical_features = range(data_row.shape[0])
 
-        first_row = self.discretizer.discretize(data_row)
+        if self.discretizer is None:
+            data = self.random_state.normal(
+                    0, 1, len(samples) * data_row.shape[0]).reshape(
+                    len(samples), data_row.shape[0])
+            if self.sample_around_instance:
+                data = data * self.scaler.scale_ + data_row
+            else:
+                data = data * self.scaler.scale_ + self.scaler.mean_
+            categorical_features = self.categorical_features
+            first_row = data_row
+        else:
+            first_row = self.discretizer.discretize(data_row)
         data[0] = data_row.copy()
         inverse = data.copy()
         for column in categorical_features:
+            breakpoint()
             values = self.feature_values[column]
             freqs = self.feature_frequencies[column]
 

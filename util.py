@@ -48,17 +48,16 @@ def feature_key(feature: str):
     return [name, lower, upper]
 
 
-def normalize(data: np.ndarray, lower: float = 0.0, upper: float = 1.0, scale: float = 1.0) -> np.ndarray:
+def normalize(data: np.ndarray, ifnan="lower") -> np.ndarray:
     min_val = np.min(data)
     max_val = np.max(data)
 
     if min_val == max_val:
-        return np.full(data.shape, lower)
+        return np.full(data.shape, 0.0 if "lower" else 1.0)
 
     normalized = (data - min_val) / (max_val - min_val)
-    scaled = normalized * (upper - lower) + lower
 
-    return scaled
+    return normalized
 
 
 def normalize_rows_to_range(matrix, lower=-1, upper=1):
@@ -103,6 +102,31 @@ def normalize_with_mean_reference(data: np.ndarray) -> np.ndarray:
         output[i] = copy.deepcopy(normalized)
 
     return output
+
+
+def normalize_positive_negative(data: np.ndarray) -> np.ndarray:
+    normalized = data.copy()
+
+    pos_mask = data > 0
+    neg_mask = data < 0
+
+    if pos_mask.any():
+        pos_min = data[pos_mask].min()
+        pos_max = data[pos_mask].max()
+        if pos_min == pos_max:
+            normalized[pos_mask] = 1
+        else:
+            normalized[pos_mask] = (data[pos_mask] - pos_min) / (pos_max - pos_min)
+
+    if neg_mask.any():
+        neg_min = data[neg_mask].min()
+        neg_max = data[neg_mask].max()
+        if neg_min == neg_max:
+            normalized[neg_mask] = -1
+        else:
+            normalized[neg_mask] = (data[neg_mask] - neg_max) / (neg_min - neg_max) * -1
+
+    return normalized
 
     # shape = data.shape
     # data = data.flatten()

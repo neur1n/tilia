@@ -127,7 +127,7 @@ class CALimeExplainer(LimeTabularExplainer):
 
         domain_mapper = TableDomainMapper(feature_names,
                                           values,
-                                          scaled_data[0],
+                                          data[0] if model_regressor == "dtr" else scaled_data[0],
                                           categorical_features=categorical_features,
                                           discretized_feature_names=discretized_feature_names,
                                           feature_indexes=feature_indexes)
@@ -149,8 +149,8 @@ class CALimeExplainer(LimeTabularExplainer):
             (ret_exp.intercept[label],
              ret_exp.local_exp[label],
              ret_exp.score[label],
-             ret_exp.local_pred) = self.base.explain_instance_with_data(
-                scaled_data,
+             ret_exp.local_pred, _, _, _) = self.base.explain_instance_with_data(
+                data if model_regressor == "dtr" else scaled_data,
                 yss,
                 distances,
                 label,

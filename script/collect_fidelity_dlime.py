@@ -31,6 +31,8 @@ import DLIME.explainer_tabular
 
 dataset = [
         dataset.Dataset("iris", "classification", openml_id=61),
+        dataset.Dataset("phoneme", "classification", openml_id=1489),
+        dataset.Dataset("diabetes", "classification", openml_id=37),
         dataset.Dataset("glass", "classification", openml_id=41),
         dataset.Dataset("ionosphere", "classification", openml_id=59),
         dataset.Dataset("fri_c4_1000_100", "classification", openml_id=718),
@@ -46,6 +48,9 @@ if __name__ == '__main__':
     ap.add_argument("-s", "--sample", default=-1, type=int, required=False, help="Number of samples to explain.")
     ap.add_argument("-t", "--timestamp", default=None, type=str, required=False, help="Timestamp.")
     args = ap.parse_args()
+
+    if args.regressor == "linear":
+        args.regressor = None
 
     if args.timestamp is None:
         args.timestamp = datetime.datetime.now().strftime("%Y%m%d")
@@ -113,7 +118,7 @@ if __name__ == '__main__':
                         mode=ds.task,
                         training_labels=y_train,
                         feature_names=ds.feature,
-                        discretize_continuous=True,
+                        discretize_continuous=False,
                         discretizer="quartile",
                         class_names=ds.label,
                         random_state=seed)
@@ -123,7 +128,8 @@ if __name__ == '__main__':
                         predict_fn=best_opaque.predict_proba,
                         labels=[l for l in range(len(ds.label))],
                         num_features=n_feature,
-                        explainer="lime")
+                        clustered_data=subset,
+                        explainer="dlime")
 
                 fidelity[i * len(config.SEED) + j] = list(exp_inst.score.values())
 

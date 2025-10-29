@@ -30,12 +30,13 @@ import CALIME.causal_model
 
 dataset = [
         dataset.Dataset("iris", "classification", openml_id=61),
+        dataset.Dataset("phoneme", "classification", openml_id=1489),
+        dataset.Dataset("diabetes", "classification", openml_id=37),
         dataset.Dataset("glass", "classification", openml_id=41),
         dataset.Dataset("ionosphere", "classification", openml_id=59),
         dataset.Dataset("fri_c4_1000_100", "classification", openml_id=718),
         dataset.Dataset("tecator", "classification", openml_id=851),
         dataset.Dataset("clean1", "classification", openml_id=40665),
-        dataset.Dataset("cnae-9", "classification", openml_id=1468),
         ]
 
 
@@ -115,7 +116,7 @@ if __name__ == '__main__':
                         X_train,
                         feature_names=ds.feature,
                         class_names=ds.label,
-                        discretize_continuous=True)
+                        discretize_continuous=False)
                 exp_inst, calime_data, calime_neighbor_gen_time = \
                         calime_explainer.explain_instance(
                                 data_row=X_test[i],

@@ -6,6 +6,7 @@ import sys
 sys.path.append(os.path.abspath(os.path.dirname(__file__) + "/.."))
 
 import argparse
+import csv
 import datetime
 import networkx as nx
 import numpy as np
@@ -21,6 +22,7 @@ import sklearn.metrics
 import sklearn.model_selection
 import sklearn.tree
 import sklearn.utils
+import time
 import tqdm
 
 import config
@@ -32,6 +34,8 @@ import CALIME.causal_model
 
 dataset = [
         dataset.Dataset("iris", "classification", openml_id=61),
+        dataset.Dataset("phoneme", "classification", openml_id=1489),
+        dataset.Dataset("diabetes", "classification", openml_id=37),
         dataset.Dataset("glass", "classification", openml_id=41),
         dataset.Dataset("ionosphere", "classification", openml_id=59),
         dataset.Dataset("fri_c4_1000_100", "classification", openml_id=718),
@@ -47,6 +51,9 @@ if __name__ == '__main__':
     ap.add_argument("-s", "--sample", default=-1, type=int, required=False, help="Number of samples to explain.")
     ap.add_argument("-t", "--timestamp", default=None, type=str, required=False, help="Timestamp.")
     args = ap.parse_args()
+
+    if args.regressor == "linear":
+        args.regressor = None
 
     if args.timestamp is None:
         args.timestamp = datetime.datetime.now().strftime("%Y%m%d")
@@ -107,26 +114,33 @@ if __name__ == '__main__':
         else:
             args.sample = min(args.sample, len(X_test))
 
+        timing = []
         for idx in tqdm.tqdm(range(args.sample), desc="Sample"):
         # for idx in tqdm.tqdm(range(2)):
             df = [pd.DataFrame() for _ in range(len(ds.label))]
 
             for seed in tqdm.tqdm(config.SEED, desc="Seed", leave=False):
+                tic = time.perf_counter()
                 explainer = CALIME.calime_explainer.CALimeExplainer(
                         graph,
                         generative_model,
                         X_train,
                         feature_names=ds.feature,
                         class_names=ds.label,
-                        discretize_continuous=True)
+                        discretize_continuous=False,
+                        )
 
                 exp_inst, calime_data, calime_neighbor_gen_time = \
                         explainer.explain_instance(
                                 data_row=X_test[idx],
                                 predict_fn=opaque_model.predict_proba,
                                 labels=[l for l in range(len(ds.label))],
-                                num_features=n_feature)
+                                num_features=n_feature,
+                                model_regressor=args.regressor,
+                                )
                 # exp_inst.save_to_file(f"{output_dir}/lbl{y_test[idx]}_samp{idx}_seed{seed}.html")
+                toc = time.perf_counter()
+                timing.append(toc - tic)
 
                 # if args.regressor is None:
                 if True:
@@ -141,11 +155,9 @@ if __name__ == '__main__':
                         neg_q = None
 
                         if len(pos_i) > 0:
-                            # pos_q = np.percentile(pos_i, [50])
                             pos_q = np.quantile(pos_i, 0.5)
 
                         if len(neg_i) > 0:
-                            # neg_q = np.percentile(neg_i, [50])
                             neg_q = np.quantile(neg_i, 0.5)
 
                         # NOTE: <feature>:<importance>:<binned importance>
@@ -243,3 +255,8 @@ if __name__ == '__main__':
 
             #     file = f"../output/{ds.name}_lbl{y_test[idx]}_exp{l}_{type(regressor).__name__}_fp_{timestamp}.csv"
             #     spark_df.toPandas().head(10).to_csv(file, sep=delimiter)
+
+        with open(f"{output_dir}/timing_{ds.name}.csv", "w", newline="", encoding="utf-8") as f:
+            writer = csv.writer(f)
+            for t in timing:
+                writer.writerow([t])

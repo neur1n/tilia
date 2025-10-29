@@ -3,6 +3,8 @@ from boruta import BorutaPy
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import Ridge, lars_path
 from sklearn.utils import check_random_state
+import sklearn.model_selection
+import sklearn.tree
 
 
 class LimeBase(object):
@@ -104,14 +106,45 @@ class LimeBase(object):
         if model_regressor is None:
             model_regressor = Ridge(alpha=1, fit_intercept=True,
                                     random_state=self.random_state)
+
+            model_regressor.fit(neighborhood_data[:, used_features],
+                           labels_column, sample_weight=weights)
+        elif model_regressor == "dtr":
+            X_train, X_test, y_train, y_test, w_train, w_test = \
+                    sklearn.model_selection.train_test_split(
+                            neighborhood_data[:, used_features], labels_column, weights,
+                            train_size=0.8, random_state=42)  # type: ignore
+            model_regressor = sklearn.tree.DecisionTreeRegressor(
+                    random_state=self.random_state)
+            param = {"max_depth": range(2, 10)}
+            kfold = sklearn.model_selection.KFold(2, shuffle=True, random_state=self.random_state)
+            search = sklearn.model_selection.GridSearchCV(model_regressor, param, cv=kfold)
+            with np.errstate(invalid="ignore"):
+                search.fit(X_train, y_train, sample_weight=w_train)
+            model_regressor = search.best_estimator_
+            prediction_score = model_regressor.score(X_test, y_test, sample_weight=w_test)
         easy_model = model_regressor
-        easy_model.fit(neighborhood_data[:, used_features],
-                       labels_column, sample_weight=weights)
+        # easy_model.fit(neighborhood_data[:, used_features],
+        #                labels_column, sample_weight=weights)
         prediction_score = easy_model.score(
             neighborhood_data[:, used_features],
             labels_column, sample_weight=weights)
 
         local_pred = easy_model.predict(neighborhood_data[0, used_features].reshape(1, -1))
+
+        if not hasattr(easy_model, "intercept_"):
+            setattr(easy_model, "intercept_", 0.0)
+
+        importance = None
+        if hasattr(easy_model, "coef_"):
+            importance = easy_model.coef_
+        elif hasattr(easy_model, "feature_importances_"):
+            importance = easy_model.feature_importances_
+            # NOTE: It does not lead to good visualization or interpretation.
+            # NOTE: Instead, just use all possitive importances and normalize
+            #       them to [-1, 1].
+            if label != neighborhood_labels[0].argmax():
+                importance = -importance
 
         if self.verbose:
             print('Intercept', easy_model.intercept_)
@@ -119,6 +152,6 @@ class LimeBase(object):
             print('Right:', neighborhood_labels[0, label])
 
         return (easy_model.intercept_,
-                    sorted(zip(used_features, easy_model.coef_),
+                    sorted(zip(used_features, importance),
                            key=lambda x: np.abs(x[1]), reverse=True),
                     prediction_score, local_pred)

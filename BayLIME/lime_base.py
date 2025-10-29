@@ -6,6 +6,8 @@ import scipy as sp
 from sklearn.linear_model import Ridge, lars_path,BayesianRidge
 from sklearn.utils import check_random_state
 import csv
+import sklearn.model_selection
+import sklearn.tree
 
 class LimeBase(object):
     """Class for learning a locally linear sparse model from perturbed data"""
@@ -194,6 +196,21 @@ class LimeBase(object):
         if model_regressor == 'non_Bay':
             model_reg = Ridge(alpha=1,fit_intercept=True,random_state=self.random_state)
             print('using non_Bay option for model regressor')
+
+        if model_regressor == "dtr":
+            X_train, X_test, y_train, y_test, w_train, w_test = \
+                    sklearn.model_selection.train_test_split(
+                            neighborhood_data[:, used_features], labels_column, weights,
+                            train_size=0.8, random_state=42)  # type: ignore
+            model_reg = sklearn.tree.DecisionTreeRegressor(
+                    random_state=self.random_state)
+            param = {"max_depth": range(2, 10)}
+            kfold = sklearn.model_selection.KFold(2, shuffle=True, random_state=self.random_state)
+            search = sklearn.model_selection.GridSearchCV(model_reg, param, cv=kfold)
+            with np.errstate(invalid="ignore"):
+                search.fit(X_train, y_train, sample_weight=w_train)
+            model_reg= search.best_estimator_
+            prediction_score = model_reg.score(X_test, y_test, sample_weight=w_test)
         
         #added by XZ
         if model_regressor == 'Bay_non_info_prior':
@@ -250,7 +267,7 @@ class LimeBase(object):
             neighborhood_data[:, used_features],
             labels_column, sample_weight=weights)
         
-        if model_regressor == 'non_Bay':
+        if model_regressor in ['non_Bay', 'dtr']:
             local_pred = easy_model.predict(neighborhood_data[0, used_features].reshape(1, -1))
             local_std = 0
             
@@ -274,6 +291,18 @@ class LimeBase(object):
         if model_regressor == 'non_Bay':
             return (easy_model.intercept_,
                     sorted(zip(used_features, easy_model.coef_,np.zeros(len(easy_model.coef_))),
+                           key=lambda x: np.abs(x[1]),
+                           reverse=True),
+                    prediction_score, local_pred)
+        elif model_regressor == 'dtr':
+            setattr(easy_model, "intercept_", 0.0)
+
+            importance = easy_model.feature_importances_
+            if label != neighborhood_labels[0].argmax():
+                importance = -importance
+
+            return (easy_model.intercept_,
+                    sorted(zip(used_features, importance, np.zeros(len(importance))),
                            key=lambda x: np.abs(x[1]),
                            reverse=True),
                     prediction_score, local_pred)

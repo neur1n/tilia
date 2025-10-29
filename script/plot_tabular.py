@@ -13,7 +13,6 @@ import re
 
 import matplotlib.image
 import matplotlib.pyplot as plt
-import mpl_toolkits.axes_grid1.axes_divider
 import numpy as np
 import pandas as pd
 import sklearn.datasets
@@ -25,9 +24,11 @@ import util
 
 
 dataset = [
+        # dataset.Dataset("phoneme", "classification", openml_id=1489),
         dataset.Dataset("iris", "classification", openml_id=61),
-        dataset.Dataset("glass", "classification", openml_id=41),
-        dataset.Dataset("ionosphere", "classification", openml_id=59),
+        # dataset.Dataset("glass", "classification", openml_id=41),
+        # dataset.Dataset("diabetes", "classification", openml_id=37),
+        # dataset.Dataset("ionosphere", "classification", openml_id=59),
         # dataset.Dataset("fri_c4_1000_100", "classification", openml_id=718),
         # dataset.Dataset("tecator", "classification", openml_id=851),
         # dataset.Dataset("clean1", "classification", openml_id=40665),
@@ -43,6 +44,9 @@ if __name__ == "__main__":
     ap.add_argument("-s", "--sample", default=-1, type=int, required=False, help="Number of samples to visualize.")
     ap.add_argument("-t", "--timestamp", default=None, required=False, help="Timestamp")
     args = ap.parse_args()
+
+    if args.regressor == "linear":
+        args.regressor = None
 
     if args.timestamp is None:
         args.timestamp = datetime.datetime.now().strftime("%Y%m%d")
@@ -78,6 +82,7 @@ if __name__ == "__main__":
                 all_sample[label].add(sample_list)
 
         all_feature = sorted(list(all_feature), key=util.feature_key)
+        breakpoint()
 
         temp = [util.feature_key(feat) for feat in all_feature]
         feature_tick = []
@@ -131,7 +136,6 @@ if __name__ == "__main__":
                 # NOTE: Must not miss the `_` after `samp{sample}`.
                 sample_file = glob.glob(f"{input_dir}/lbl{label}_samp{sample}_*.csv")
 
-
                 # Files of the same sample but different explained labels.
                 for r, file in enumerate(sample_file):
                     input = pd.read_csv(file, sep=config.DELIMITER, index_col=0)
@@ -159,7 +163,8 @@ if __name__ == "__main__":
 
                     for i, (seed, ax) in enumerate(zip(config.SEED, axes[:-1])):
                         if args.data == "default":
-                            matrix = util.normalize_with_mean_reference(importance[seed if key_type == "seed" else i])
+                            # matrix = util.normalize_with_mean_reference(importance[seed if key_type == "seed" else i])
+                            matrix = util.normalize_rows_to_range(importance[seed])
                         elif args.data == "binned":
                             matrix = binned_importance[seed if key_type == "seed" else i]
                         else:

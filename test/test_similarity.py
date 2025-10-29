@@ -16,8 +16,8 @@ def jaccard_index(mask1, mask2):
     a = set(mask1)
     b = set(mask2)
     # return len(a & b)/ len(a | b)
-    print(a.intersection(b))
-    print(a.union(b))
+    # print(a.intersection(b))
+    # print(a.union(b))
     return len(a.intersection(b)) / len(a.union(b))
 
 
@@ -59,18 +59,24 @@ if __name__ == "__main__":
             [0, 0, 1, 1, 1],
             ]
     b = np.array(b).flatten()
-
     sim = jaccard_index(a, b)
     print(sim)
-
 
     a = [12, 34, 46, 78, 90]
     a = np.array(a).flatten()
     b = [34, 12, 46, 90, 70]
     b = np.array(b).flatten()
-
     sim = jaccard_index(a, b)
-    print(sim)
+    sim2 = scipy.spatial.distance.jaccard(a, b)
+    print(f"jaccard of array: {sim} {sim2}")
+
+    a = [-2, -1, -1, -1, -2]
+    a = np.array(a).flatten()
+    b = [-2, -2, -2, -2, -2]
+    b = np.array(b).flatten()
+    sim = jaccard_index(a, b)
+    sim2 = scipy.spatial.distance.jaccard(a, b)
+    print(f"jaccard of array: {sim} {sim2}")
 
     a = [0.0, 1.0, 0.0]
     b = [0.2, 0.6, 0.2]

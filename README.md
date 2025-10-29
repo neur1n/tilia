@@ -1,6 +1,6 @@
-# $\text{LIME}^2$
+# Tilia
 
-**L**IME with **IM**proved **E**xplanations
+Enhancing LIME with Decision Tree Surrogates [CIKM 2025]
 
 
 ## 1 Prerequisites
@@ -8,14 +8,12 @@ The following prerequisites may not be strictly necessary, but they are the
 versions that the code was tested with.
 
 - Python >= 3.10
-- TensorFlow >= 2.18.0 (optional for image explanations)
 
 
 ## 2 Getting Started
 The following instructions give a quick overview of what the code does.
 
-### 2.1 Tabular Data
-In the root directory of $\text{LIME}^2$:
+In the root directory of Tilia:
 
 ```bash
 cd script
@@ -23,19 +21,10 @@ python3 collect_tabular.py  # Collect explanations and related statistics from t
 python3 plot_tabular.py     # Visualiing collected statistics
 ```
 
-### 2.2 Image Data (TODO)
-In the root directory of $\text{LIME}^2$:
-
-```bash
-cd script
-python3 collect_image.py  # Collect explanations and related statistics from image data
-python3 plot_image.py     # Visualiing collected statistics
-```
-
 
 ## 3 Usage
 ### 3.1 Data Collection
-In the root directory of $\text{LIME}^2$, running the following command
+In the root directory of Tilia, running the following command
 
 ```bash
 cd script
@@ -62,7 +51,7 @@ provided, the current date will be used, e.g., `20240101`.
 
 
 ### 3.2 Data Visualization
-In the root directory of $\text{LIME}^2$, running the following command
+In the root directory of Tilia, running the following command
 
 ```bash
 cd script
